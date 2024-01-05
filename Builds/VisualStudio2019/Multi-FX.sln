@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio Version 16
+
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Multi-FX - Standalone Plugin", "Multi-FX_StandalonePlugin.vcxproj", "{BAE306DC-1AD8-3E78-831E-E9656E7C1C00}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933} = {7536CAE5-F5F1-C734-E7E6-E812FCC5B933}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Multi-FX - VST3", "Multi-FX_VST3.vcxproj", "{13577FEE-9AFC-BDC1-0CA3-C2CD0E5071E2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933} = {7536CAE5-F5F1-C734-E7E6-E812FCC5B933}
+		{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D} = {8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Multi-FX - Shared Code", "Multi-FX_SharedCode.vcxproj", "{7536CAE5-F5F1-C734-E7E6-E812FCC5B933}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Multi-FX - VST3 Manifest Helper", "Multi-FX_VST3ManifestHelper.vcxproj", "{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13577FEE-9AFC-BDC1-0CA3-C2CD0E5071E2}.Debug|x64.ActiveCfg = Debug|x64
+		{13577FEE-9AFC-BDC1-0CA3-C2CD0E5071E2}.Debug|x64.Build.0 = Debug|x64
+		{13577FEE-9AFC-BDC1-0CA3-C2CD0E5071E2}.Release|x64.ActiveCfg = Release|x64
+		{13577FEE-9AFC-BDC1-0CA3-C2CD0E5071E2}.Release|x64.Build.0 = Release|x64
+		{BAE306DC-1AD8-3E78-831E-E9656E7C1C00}.Debug|x64.ActiveCfg = Debug|x64
+		{BAE306DC-1AD8-3E78-831E-E9656E7C1C00}.Debug|x64.Build.0 = Debug|x64
+		{BAE306DC-1AD8-3E78-831E-E9656E7C1C00}.Release|x64.ActiveCfg = Release|x64
+		{BAE306DC-1AD8-3E78-831E-E9656E7C1C00}.Release|x64.Build.0 = Release|x64
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933}.Debug|x64.ActiveCfg = Debug|x64
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933}.Debug|x64.Build.0 = Debug|x64
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933}.Release|x64.ActiveCfg = Release|x64
+		{7536CAE5-F5F1-C734-E7E6-E812FCC5B933}.Release|x64.Build.0 = Release|x64
+		{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}.Debug|x64.ActiveCfg = Debug|x64
+		{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}.Debug|x64.Build.0 = Debug|x64
+		{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}.Release|x64.ActiveCfg = Release|x64
+		{8369199D-74F3-2D65-4A5A-C0FDEDC4C38D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
