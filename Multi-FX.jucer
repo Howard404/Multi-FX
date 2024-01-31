@@ -4,11 +4,12 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="EtJvJV" name="Multi-FX">
     <GROUP id="{65EAB631-6512-5670-3527-A8C3B90539EC}" name="Source">
-      <FILE id="HcLeK8" name="ReverbProcessor.cpp" compile="0" resource="0"
+      <FILE id="W2dNLR" name="ProcessorBase.h" compile="0" resource="0" file="Source/ProcessorBase.h"/>
+      <FILE id="HcLeK8" name="ReverbProcessor.cpp" compile="1" resource="0"
             file="Source/ReverbProcessor.cpp"/>
       <FILE id="OeWPA7" name="ReverbProcessor.h" compile="0" resource="0"
             file="Source/ReverbProcessor.h"/>
-      <FILE id="avxYvC" name="ChorusProcessor.cpp" compile="0" resource="0"
+      <FILE id="avxYvC" name="ChorusProcessor.cpp" compile="1" resource="0"
             file="Source/ChorusProcessor.cpp"/>
       <FILE id="TFd5DF" name="ChorusProcessor.h" compile="0" resource="0"
             file="Source/ChorusProcessor.h"/>

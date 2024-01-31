@@ -8,27 +8,28 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ChorusProcessor.h"
+#include "ReverbProcessor.h"
 
 //==============================================================================
 MultiFXAudioProcessor::MultiFXAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif
+     : AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+        mainProcessor (new juce::AudioProcessorGraph()),
+        processorSlot1 (new juce::AudioParameterChoice("slot1", "Slot 1", processorChoices, 0)),
+        processorSlot2(new juce::AudioParameterChoice("slot2", "Slot 2", processorChoices, 1))
 {
+    addParameter(processorSlot1);
+    addParameter(processorSlot2);
 }
+
 
 MultiFXAudioProcessor::~MultiFXAudioProcessor()
 {
 }
 
 //==============================================================================
+
 const juce::String MultiFXAudioProcessor::getName() const
 {
     return JucePlugin_Name;
@@ -93,69 +94,112 @@ void MultiFXAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void MultiFXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    mainProcessor->setPlayConfigDetails(getMainBusNumInputChannels(),
+                                        getMainBusNumOutputChannels(),
+                                        sampleRate, samplesPerBlock);
+    mainProcessor->prepareToPlay(sampleRate, samplesPerBlock);
+    
+     initialiseGraph();
+}
+
+void MultiFXAudioProcessor::initialiseGraph() {
+    mainProcessor->clear();
+    
+    audioInputNode = mainProcessor->addNode(std::make_unique<AudioGraphIOProcessor> (AudioGraphIOProcessor::audioInputNode));
+    
+    audioOutputNode = mainProcessor->addNode(std::make_unique<AudioGraphIOProcessor> (AudioGraphIOProcessor::audioOutputNode));
+    
+    connectAudioNodes();
+}
+
+void MultiFXAudioProcessor::connectAudioNodes() {
+    for(int channel = 0; channel < 2; ++channel){
+        mainProcessor->addConnection({ {audioInputNode->nodeID, channel},
+                                       {audioOutputNode->nodeID, channel} });
+    }
 }
 
 void MultiFXAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    mainProcessor->releaseResources();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool MultiFXAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
+    if (layouts.getMainInputChannelSet()  == juce::AudioChannelSet::disabled()
+     || layouts.getMainOutputChannelSet() == juce::AudioChannelSet::disabled())
+        return false;
+
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
+    return layouts.getMainInputChannelSet() == layouts.getMainOutputChannelSet();
 }
 #endif
 
 void MultiFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+    for(int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i) {
+        buffer.clear(i, 0, buffer.getNumSamples());
     }
+    
+    updateGraph();
+    
+    mainProcessor->processBlock(buffer, midiMessages);
+}
+
+void MultiFXAudioProcessor::updateGraph() {
+    bool hasChanged = false;
+    
+    juce::Array<juce::AudioParameterChoice*> choices = {processorSlot1, processorSlot2};
+    
+    juce::ReferenceCountedArray<Node> slots;
+    slots.add(slot1Node);
+    slots.add(slot2Node);
+    
+    for (int i = 0; i < 2; ++i)
+           {
+               auto& choice = choices.getReference (i);
+               auto  slot   = slots  .getUnchecked (i);
+    
+               if (choice->getIndex() == 0)            // [1]
+               {
+                   if (slot != nullptr)
+                   {
+                       mainProcessor->removeNode (slot.get());
+                       slots.set (i, nullptr);
+                       hasChanged = true;
+                   }
+               }
+               else if (choice->getIndex() == 1)       // [2]
+               {
+                   if (slot != nullptr)
+                   {
+                       if (slot->getProcessor()->getName() == "Chorus")
+                           continue;
+    
+                       mainProcessor->removeNode (slot.get());
+                   }
+    
+                   slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
+                   hasChanged = true;
+               }
+               else if (choice->getIndex() == 2)       // [3]
+               {
+                   if (slot != nullptr)
+                   {
+                       if (slot->getProcessor()->getName() == "Reverb")
+                           continue;
+    
+                       mainProcessor->removeNode (slot.get());
+                   }
+    
+                   slots.set (i, mainProcessor->addNode (std::make_unique<ReverbProcessor>()));
+                   hasChanged = true;
+               }
+           }
 }
 
 //==============================================================================
@@ -166,7 +210,8 @@ bool MultiFXAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MultiFXAudioProcessor::createEditor()
 {
-    return new MultiFXAudioProcessorEditor (*this);
+//    return new MultiFXAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
