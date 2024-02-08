@@ -15,9 +15,9 @@
 MultiFXAudioProcessor::MultiFXAudioProcessor()
      : AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-        mainProcessor (new juce::AudioProcessorGraph()),
-        processorSlot1 (new juce::AudioParameterChoice("slot1", "Slot 1", processorChoices, 0)),
-        processorSlot2(new juce::AudioParameterChoice("slot2", "Slot 2", processorChoices, 1))
+                processorSlot1 (new juce::AudioParameterChoice(juce::ParameterID {"slot1", 1}, "Slot 1", processorChoices, 0)),
+                processorSlot2(new juce::AudioParameterChoice(juce::ParameterID {"slot2", 1}, "Slot 2", processorChoices, 0)),
+                mainProcessor (new juce::AudioProcessorGraph())
 {
     addParameter(processorSlot1);
     addParameter(processorSlot2);
@@ -164,7 +164,7 @@ void MultiFXAudioProcessor::updateGraph() {
                auto& choice = choices.getReference (i);
                auto  slot   = slots  .getUnchecked (i);
     
-               if (choice->getIndex() == 0)            // [1]
+               if (choice->getIndex() == 0)
                {
                    if (slot != nullptr)
                    {
@@ -173,7 +173,7 @@ void MultiFXAudioProcessor::updateGraph() {
                        hasChanged = true;
                    }
                }
-               else if (choice->getIndex() == 1)       // [2]
+               else if (choice->getIndex() == 1)
                {
                    if (slot != nullptr)
                    {
@@ -186,7 +186,7 @@ void MultiFXAudioProcessor::updateGraph() {
                    slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
                    hasChanged = true;
                }
-               else if (choice->getIndex() == 2)       // [3]
+               else if (choice->getIndex() == 2)
                {
                    if (slot != nullptr)
                    {
@@ -205,7 +205,7 @@ void MultiFXAudioProcessor::updateGraph() {
 //==============================================================================
 bool MultiFXAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* MultiFXAudioProcessor::createEditor()
