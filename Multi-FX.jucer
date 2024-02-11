@@ -4,6 +4,9 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="EtJvJV" name="Multi-FX">
     <GROUP id="{65EAB631-6512-5670-3527-A8C3B90539EC}" name="Source">
+      <FILE id="sms7NM" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+      <FILE id="Jgqjjo" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="RM7e0U" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="Rx4ZTY" name="PluginProcessor.h" compile="0" resource="0"
