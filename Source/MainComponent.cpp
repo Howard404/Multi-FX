@@ -2,12 +2,12 @@
 
 
 //==============================================================================
-ListComponent::ListComponent(juce::String name)
+/*ListComponent::ListComponent(juce::String name)
 {
     setSize(60, 20);
     this->id = name;
     this->muted = false;
-}
+}*/
 MainComponent::MainComponent()
 {
     setSize(1200, 800);
@@ -101,10 +101,10 @@ void MainComponent::resized()
     save.setBounds(footerArea.removeFromLeft(getWidth() / 10).reduced(sideItemMargin));
     load.setBounds(footerArea.removeFromLeft(getWidth() / 10).reduced(sideItemMargin));
 
-
+   
 }
 
-void MainComponent::buttonClicked(juce::TextButton* button)
+/*void MainComponent::buttonClicked(juce::TextButton* button)
 {
     if (button == &add)
     {
@@ -115,9 +115,9 @@ void MainComponent::buttonClicked(juce::TextButton* button)
 
     }
 
-}
+}*/
 
-int ListBoxComponent::getNumRows()
+/*int ListBoxComponent::getNumRows()
 {
     return this->numRows;
 }
@@ -126,7 +126,7 @@ int ListBoxComponent::getNumRows()
 void ListBoxComponent::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected)
 {
 
-}
+}*/
 
 
 

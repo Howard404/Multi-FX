@@ -9,7 +9,7 @@
 
 */
 
-class ListBoxComponent : public juce::Component, public juce::ListBoxModel
+/*class ListBoxComponent : public juce::Component, public juce::ListBoxModel
 
 {
 public:
@@ -29,7 +29,7 @@ private:
     int numRows = 0;
     int currentID;
 
-};
+};*/
 
 class MainComponent : public juce::Component,
     public juce::Button::Listener
@@ -44,7 +44,7 @@ public:
     //==============================================================================
     void paint(juce::Graphics&);
     void resized() override;
-    void buttonClicked(juce::TextButton* button);
+    //void buttonClicked(juce::TextButton* button);
 
 
 
@@ -57,8 +57,6 @@ private:
     //==============================================================================
     // Your private member variables go here..
 
-    ListBoxComponent active;
-    ListBoxComponent library;
 
     juce::ListBox activeEffects;
     juce::ListBox effectLibrary;
@@ -77,7 +75,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
 
-class ListComponent : public juce::Component, juce::MouseListener
+/*class ListComponent : public juce::Component, juce::MouseListener
 {
 public:
     ListComponent(juce::String);
@@ -85,7 +83,7 @@ public:
 private:
     juce::String id;
     bool muted;
-};
+};*/
 
 
 
