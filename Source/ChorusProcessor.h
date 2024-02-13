@@ -13,13 +13,18 @@
 #include <JuceHeader.h>
 //#include "Base.h"
 
-class ChorusProcessor : public juce::AudioProcessor {
+class ChorusProcessor : public juce::AudioProcessor, 
+                        public juce::AudioProcessorValueTreeState::Listener
+{
 public:
     //==============================================================================
     ChorusProcessor();
+    ~ChorusProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+//    void prepare (const juce::dsp::ProcessSpec& spec) noexcept;
+    void reset() override;
     void releaseResources() override;
     void processBlock (juce::AudioSampleBuffer&, juce::MidiBuffer&) override;
 
@@ -44,7 +49,19 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState apvts;
 private:
+    
+    juce::dsp::Chorus<float> chorus;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    
+    juce::AudioPlayHead::CurrentPositionInfo positionInfo;
+    
+    int bpm { 0 };
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
+    // ProcessChain contains both Chorus and Gain
+//    juce::dsp::ProcessorChain<juce::dsp::Chorus<float>, juce::dsp::Gain<float>> processorChain;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusProcessor)
 };

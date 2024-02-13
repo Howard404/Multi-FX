@@ -67,6 +67,8 @@ private:
     
     std::unique_ptr<juce::AudioProcessorGraph> mainProcessor;
     
+    Node::Ptr chorusNode;
+    
     Node::Ptr audioInputNode;
     Node::Ptr audioOutputNode;
     Node::Ptr midiInputNode;

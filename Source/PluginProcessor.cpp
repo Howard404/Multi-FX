@@ -182,7 +182,6 @@ void MultiFXAudioProcessor::updateGraph() {
     
                        mainProcessor->removeNode (slot.get());
                    }
-    
                    slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
                    hasChanged = true;
                }
