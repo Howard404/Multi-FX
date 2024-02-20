@@ -24,14 +24,20 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     activeEffects.setColour(juce::ListBox::outlineColourId, juce::Colour(26, 30, 32));
     addAndMakeVisible(activeEffects);
 
-    add.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-    remove.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-    add.setButtonText("Add");
-    remove.setButtonText("Remove");
-    addAndMakeVisible(add);
-    addAndMakeVisible(remove);
-
-
+    reverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+    chorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+    muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+    muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+    reverb.setButtonText("Reverb");
+    chorus.setButtonText("Chorus");
+    muteReverb.setButtonText("muted");
+    muteChorus.setButtonText("muted");
+    //muteChorus.setImages(false,true,true,unmuted,1.0,juce::Colours::white,unmuted,1.0, juce::Colours::white,muted,1.0, juce::Colours::white,0);
+    //muteReverb.setImages(false, true, true, unmuted, 1.0, juce::Colours::white, unmuted, 1.0, juce::Colours::white, muted, 1.0, juce::Colours::white, 0);
+    addAndMakeVisible(reverb);
+    addAndMakeVisible(chorus);
+    addAndMakeVisible(muteChorus);
+    addAndMakeVisible(muteReverb);
 
 
     //footer buttons and list
@@ -47,31 +53,11 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     effectLibrary.setColour(juce::ListBox::backgroundColourId, juce::Colour(36, 44, 50));
     effectLibrary.setOutlineThickness(3);
     effectLibrary.setColour(juce::ListBox::outlineColourId, juce::Colour(26, 30, 32));
-    effectLibrary.setModel(&library);
-    //effectLibrary.addChildAndSetID(new ListComponent("Chorus") ,"Chorus");
-    
-     //effectLibrary.addChildAndSetID(new ListComponent("Reverb"), "Reverb");
-     effectLibrary.updateContent();
     addAndMakeVisible(effectLibrary);
 
     
 }
 
-ListComponent::ListComponent(juce::String name)
-{
-    setSize(60, 20);
-    this->id = name;
-    this->muted = false;
-    mute.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-    mute.setButtonText("muted");
-    addAndMakeVisible(mute);
-}
-
-void ListComponent::resized()
-{
-    auto area = getLocalBounds();
-    mute.setBoundsRelative(0.1f,0.9f,0.9f,0.9f);
-}
 
 MultiFXAudioProcessorEditor::~MultiFXAudioProcessorEditor()
 {
@@ -108,9 +94,12 @@ void MultiFXAudioProcessorEditor::resized()
 
 
 
-    auto sideButtonArea = activeArea.removeFromLeft(activeArea.getWidth() / 2);
-    add.setBounds(sideButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
-    remove.setBounds(activeArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
+    auto sideButtonArea = activeArea.removeFromLeft(activeArea.getWidth() / 1.5);
+    auto muteButtonArea = activeArea.removeFromLeft(activeArea.getWidth() / 1.2);
+    reverb.setBounds(sideButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
+    muteReverb.setBounds(muteButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
+    chorus.setBounds(sideButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
+    muteChorus.setBounds(muteButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
 
 
     auto effectArea = area.removeFromTop(getHeight() - footerHeight).removeFromLeft(getWidth() / 2);
@@ -121,21 +110,6 @@ void MultiFXAudioProcessorEditor::resized()
     load.setBounds(footerArea.removeFromLeft(getWidth() / 10).reduced(sideItemMargin));
 }
 
-int ListBoxComponent::getNumRows()
-{
-    return this->numRows;
-}
 
-
-void ListBoxComponent::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected)
-{
-    g.fillAll(juce::Colours::red);
-
-}
-
-juce::Component* ListBoxComponent::refreshComponentForRow(int rowNumber, bool isRowSelected, Component* existingComponentToUpdate)
-{
-    return existingComponentToUpdate;
-}
 
 
