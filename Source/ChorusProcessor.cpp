@@ -32,7 +32,6 @@ ChorusProcessor::~ChorusProcessor()
 }
 
 
-// UNDERSTAND THIS CODE LATER
 juce::AudioProcessorValueTreeState::ParameterLayout ChorusProcessor::createParameters()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout params;
@@ -44,6 +43,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ChorusProcessor::createParam
     params.add (std::make_unique<juce::AudioParameterInt>  (juce::ParameterID {"CENTREDELAY", 1}, "Centre Delay", 1, 50, 1));
     params.add (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"FEEDBACK", 1}, "Feedback", Range { -1.0f, 1.0f, 0.01f }, 0.0f));
     params.add (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MIX", 1}, "Mix", Range { 0.0f, 1.0f, 0.01f }, 0.0f));
+//    params.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"BYPASS", 1}, "Bypass", false));
     
     return params;
 }
@@ -154,10 +154,10 @@ void ChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     chorus.process (context);
 }
 
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new ChorusProcessor();
-}
+//juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+//{
+//    return new ChorusProcessor();
+//}
 
 // Called after playback has stopped, to let the object free up any resources it no longer needs.
 void ChorusProcessor::releaseResources()
@@ -175,8 +175,8 @@ bool ChorusProcessor::hasEditor() const
 juce::AudioProcessorEditor* ChorusProcessor::createEditor()
 {
 //    return new MultiFXAudioProcessorEditor (*this);
-//    return nullptr;
-    return new juce::GenericAudioProcessorEditor(*this);
+    return nullptr;
+//    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 
