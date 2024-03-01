@@ -30,6 +30,12 @@ MultiFXAudioProcessor::~MultiFXAudioProcessor()
 
 //==============================================================================
 
+MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::getChorus()
+{
+    MultiFXAudioProcessor::Node::Ptr chorusNode = mainProcessor->addNode (std::make_unique<ChorusProcessor>());
+    return chorusNode;
+    
+}
 const juce::String MultiFXAudioProcessor::getName() const
 {
     return JucePlugin_Name;
@@ -99,7 +105,7 @@ void MultiFXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
                                         sampleRate, samplesPerBlock);
     mainProcessor->prepareToPlay(sampleRate, samplesPerBlock);
     
-     initialiseGraph();
+    initialiseGraph();
 }
 
 void MultiFXAudioProcessor::initialiseGraph() {
@@ -182,6 +188,7 @@ void MultiFXAudioProcessor::updateGraph() {
     
                        mainProcessor->removeNode (slot.get());
                    }
+                   DBG("CHORUS PROCESSOR");
                    slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
                    hasChanged = true;
                }
@@ -194,7 +201,7 @@ void MultiFXAudioProcessor::updateGraph() {
     
                        mainProcessor->removeNode (slot.get());
                    }
-    
+                   DBG("REVERB PROCESSOR");
                    slots.set (i, mainProcessor->addNode (std::make_unique<ReverbProcessor>()));
                    hasChanged = true;
                }
@@ -209,8 +216,8 @@ bool MultiFXAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MultiFXAudioProcessor::createEditor()
 {
-//    return new MultiFXAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new MultiFXAudioProcessorEditor (*this);
+//    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
