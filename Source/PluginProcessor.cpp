@@ -34,8 +34,8 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::getChorus()
 {
     MultiFXAudioProcessor::Node::Ptr chorusNode = mainProcessor->addNode (std::make_unique<ChorusProcessor>());
     return chorusNode;
-    
 }
+
 const juce::String MultiFXAudioProcessor::getName() const
 {
     return JucePlugin_Name;
@@ -151,62 +151,158 @@ void MultiFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         buffer.clear(i, 0, buffer.getNumSamples());
     }
     
-    updateGraph();
+//    updateGraph();
     
     mainProcessor->processBlock(buffer, midiMessages);
 }
 
-void MultiFXAudioProcessor::updateGraph() {
+// UPDATE GRPAH FOR BUTTONS
+
+void MultiFXAudioProcessor::updateGraph(int slotIndex)
+{
     bool hasChanged = false;
-    
-    juce::Array<juce::AudioParameterChoice*> choices = {processorSlot1, processorSlot2};
     
     juce::ReferenceCountedArray<Node> slots;
     slots.add(slot1Node);
     slots.add(slot2Node);
     
-    for (int i = 0; i < 2; ++i)
-           {
-               auto& choice = choices.getReference (i);
-               auto  slot   = slots  .getUnchecked (i);
+    if(slotIndex == 0)
+    {
+        auto slot = slots.getUnchecked(0);
+        if(slot != nullptr)
+        {
+            mainProcessor->removeNode(slot.get());
+            slots.set(0, nullptr);
+            hasChanged = true;
+        } // End if
+    } // End if
+    else if(slotIndex == 1)
+    {
+        auto slot = slots.getUnchecked(1);
+        
+        if(slot != nullptr)
+        {
+            if(slot->getProcessor()->getName() == "Chorus")
+            {
+                return;
+            } // End if
+            
+            mainProcessor->removeNode(slot.get());
+        } // End if
+        
+        slots.set(1, MultiFXAudioProcessor::getChorus());
+        slot = slots.getUnchecked(1);
+        DBG("Processor: " << slot->getProcessor()->getName());
+        hasChanged = true;
+        DBG("Chorus Created");
+    } // End else if
     
-               if (choice->getIndex() == 0)
-               {
-                   if (slot != nullptr)
-                   {
-                       mainProcessor->removeNode (slot.get());
-                       slots.set (i, nullptr);
-                       hasChanged = true;
-                   }
-               }
-               else if (choice->getIndex() == 1)
-               {
-                   if (slot != nullptr)
-                   {
-                       if (slot->getProcessor()->getName() == "Chorus")
-                           continue;
     
-                       mainProcessor->removeNode (slot.get());
-                   }
-                   DBG("CHORUS PROCESSOR");
-                   slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
-                   hasChanged = true;
-               }
-               else if (choice->getIndex() == 2)
-               {
-                   if (slot != nullptr)
-                   {
-                       if (slot->getProcessor()->getName() == "Reverb")
-                           continue;
+    // CONNECT NODES TO GRAPH
+    if (hasChanged)
+    {
+        for (auto connection : mainProcessor->getConnections())
+            mainProcessor->removeConnection (connection);
+
+        juce::ReferenceCountedArray<Node> activeSlots;
+
+        for (auto slot : slots)
+        {
+            if (slot != nullptr)
+            {
+                activeSlots.add (slot);
+
+                slot->getProcessor()->setPlayConfigDetails (getMainBusNumInputChannels(),
+                                                            getMainBusNumOutputChannels(),
+                                                            getSampleRate(), getBlockSize());
+            } // End if
+        } // End for loop
+
+        if (activeSlots.isEmpty())
+        {
+            DBG("NO ACTIVE SLOTS");
+            connectAudioNodes();
+        } // End if
+        else
+        {
+            DBG("ACTIVE SLOTS CONNECTING");
+            for (int i = 0; i < activeSlots.size() - 1; ++i)
+            {
+                for (int channel = 0; channel < 2; ++channel)
+                    mainProcessor->addConnection ({ { activeSlots.getUnchecked (i)->nodeID,      channel },
+                                                    { activeSlots.getUnchecked (i + 1)->nodeID,  channel } });
+            } // End for loop
+
+            for (int channel = 0; channel < 2; ++channel)
+            {
+                mainProcessor->addConnection ({ { audioInputNode->nodeID,         channel },
+                                                { activeSlots.getFirst()->nodeID, channel } });
+                mainProcessor->addConnection ({ { activeSlots.getLast()->nodeID,  channel },
+                                                { audioOutputNode->nodeID,        channel } });
+            } // End for loop
+        } // End else
+
+        for (auto node : mainProcessor->getNodes())
+            node->getProcessor()->enableAllBuses();
+        
+        DBG("ACTIVE SLOTS CONNECTION COMPLETED");
+    } // End if
     
-                       mainProcessor->removeNode (slot.get());
-                   }
-                   DBG("REVERB PROCESSOR");
-                   slots.set (i, mainProcessor->addNode (std::make_unique<ReverbProcessor>()));
-                   hasChanged = true;
-               }
-           }
 }
+
+//void MultiFXAudioProcessor::updateGraph() {
+//    bool hasChanged = false;
+//    
+//    juce::Array<juce::AudioParameterChoice*> choices = {processorSlot1, processorSlot2};
+//    
+//    juce::ReferenceCountedArray<Node> slots;
+//    slots.add(slot1Node);
+//    slots.add(slot2Node);
+//    
+//    DBG("update graph is called");
+//    
+//    for (int i = 0; i < 2; ++i)
+//           {
+//               auto& choice = choices.getReference (i);
+//               auto  slot   = slots  .getUnchecked (i);
+//    
+//               if (choice->getIndex() == 0)
+//               {
+//                   if (slot != nullptr)
+//                   {
+//                       mainProcessor->removeNode (slot.get());
+//                       slots.set (i, nullptr);
+//                       hasChanged = true;
+//                   }
+//               }
+//               else if (choice->getIndex() == 1)
+//               {
+//                   if (slot != nullptr)
+//                   {
+//                       if (slot->getProcessor()->getName() == "Chorus")
+//                           continue;
+//    
+//                       mainProcessor->removeNode (slot.get());
+//                   }
+//                   DBG("CHORUS PROCESSOR");
+//                   slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
+//                   hasChanged = true;
+//               }
+//               else if (choice->getIndex() == 2)
+//               {
+//                   if (slot != nullptr)
+//                   {
+//                       if (slot->getProcessor()->getName() == "Reverb")
+//                           continue;
+//    
+//                       mainProcessor->removeNode (slot.get());
+//                   }
+//                   DBG("REVERB PROCESSOR");
+//                   slots.set (i, mainProcessor->addNode (std::make_unique<ReverbProcessor>()));
+//                   hasChanged = true;
+//               }
+//           }
+//}
 
 //==============================================================================
 bool MultiFXAudioProcessor::hasEditor() const

@@ -57,11 +57,12 @@ public:
     
     // Returns the ChorusProcessor NodeID
     Node::Ptr getChorus();
+    void updateGraph(int slotIndex);
     
 private:
     void initialiseGraph();
     void connectAudioNodes();
-    void updateGraph();
+//    void updateGraph(int slotIndex);
     
     juce::StringArray processorChoices {"Empty", "Chorus", "Reverb"};
     

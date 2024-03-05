@@ -4,6 +4,9 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="EtJvJV" name="Multi-FX">
     <GROUP id="{65EAB631-6512-5670-3527-A8C3B90539EC}" name="Source">
+      <FILE id="JenkAo" name="ChorusEditor.cpp" compile="1" resource="0"
+            file="Source/ChorusEditor.cpp"/>
+      <FILE id="GcT9Dl" name="ChorusEditor.h" compile="0" resource="0" file="Source/ChorusEditor.h"/>
       <FILE id="HcLeK8" name="ReverbProcessor.cpp" compile="1" resource="0"
             file="Source/ReverbProcessor.cpp"/>
       <FILE id="OeWPA7" name="ReverbProcessor.h" compile="0" resource="0"

@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 //#include "MainComponent.h"
+//#include ChorusEditor.h
 
 //==============================================================================
 MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor& p)
@@ -64,9 +65,11 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     if(button == &chorus)
     {
         DBG("Chorus Selected\n");
-        juce::AudioProcessorGraph::Node::Ptr chorusNode = audioProcessor.getChorus();
-        if(chorusNode != nullptr)
-            DBG("Chorus Node: " << chorusNode->getProcessor()->getName() << "\n");
+        audioProcessor.updateGraph(1);
+        chorus.setButtonText("NEW CHORUS!");
+        // Get chorusProcessor
+        // Get chorus NodeID
+        // Pass processor to subcompnent and get its reference
     } else if(button == &reverb)
     {
         DBG("Reverb Selected\n");
@@ -76,6 +79,8 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
 
 MultiFXAudioProcessorEditor::~MultiFXAudioProcessorEditor()
 {
+    reverb.removeListener(this);
+    chorus.removeListener(this);
 }
 
 //==============================================================================
