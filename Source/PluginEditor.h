@@ -10,12 +10,25 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "ChorusProcessor.h"
 //#include "MainComponent.h"
 
 //==============================================================================
 /**
 */
+class ActiveComponent : public juce::Component 
+{
+public:
+    ActiveComponent();
+    ~ActiveComponent() override;
 
+    void paint(juce::Graphics&) override;
+    void resized() override;
+
+    ChorusProcessor chorus;
+    juce::AudioProcessorEditor* mainEditor = new juce::GenericAudioProcessorEditor(chorus);
+
+};
 class MultiFXAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Button::Listener
 {
 public:
