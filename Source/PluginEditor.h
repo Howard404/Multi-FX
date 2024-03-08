@@ -46,7 +46,7 @@ private:
     // access the processor object that created it.
     MultiFXAudioProcessor& audioProcessor;
 
-    //MainComponent* audioWindow;
+    ActiveComponent audioWindow;
 
     juce::ListBox activeEffects;
     juce::ListBox effectLibrary;
