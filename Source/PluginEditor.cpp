@@ -12,6 +12,23 @@
 //#include ChorusEditor.h
 
 //==============================================================================
+ActiveComponent::ActiveComponent()
+{
+    addAndMakeVisible(mainEditor);
+}
+ActiveComponent::~ActiveComponent()
+{
+
+}
+
+void ActiveComponent::paint(juce::Graphics&)
+{
+
+}
+void ActiveComponent::resized()
+{
+    mainEditor->setBounds(getLocalBounds());
+}
 MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
@@ -57,6 +74,8 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     effectLibrary.setOutlineThickness(3);
     effectLibrary.setColour(juce::ListBox::outlineColourId, juce::Colour(26, 30, 32));
     addAndMakeVisible(effectLibrary);
+
+    addAndMakeVisible(audioWindow);
 
     
 }
@@ -122,9 +141,10 @@ void MultiFXAudioProcessorEditor::resized()
     muteChorus.setBounds(muteButtonArea.removeFromBottom(sideItemHeight).reduced(sideItemMargin));
 
 
-    auto effectArea = area.removeFromTop(getHeight() - footerHeight).removeFromLeft(getWidth() / 2);
+    auto effectArea = area.removeFromTop(getHeight() - footerHeight);
     auto footerArea = area.removeFromBottom(getHeight() - footerHeight);
 
+    audioWindow.setBounds(effectArea);
 
     save.setBounds(footerArea.removeFromLeft(getWidth() / 10).reduced(sideItemMargin));
     load.setBounds(footerArea.removeFromLeft(getWidth() / 10).reduced(sideItemMargin));
