@@ -11,16 +11,19 @@
 #include "ChorusProcessor.h"
 #include "ReverbProcessor.h"
 
+// Global Index for nodeID array
+int globalIndex = 0;
+
 //==============================================================================
 MultiFXAudioProcessor::MultiFXAudioProcessor()
      : AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-                processorSlot1 (new juce::AudioParameterChoice(juce::ParameterID {"slot1", 1}, "Slot 1", processorChoices, 0)),
-                processorSlot2(new juce::AudioParameterChoice(juce::ParameterID {"slot2", 1}, "Slot 2", processorChoices, 0)),
+//                processorSlot1 (new juce::AudioParameterChoice(juce::ParameterID {"slot1", 1}, "Slot 1", processorChoices, 0)),
+//                processorSlot2(new juce::AudioParameterChoice(juce::ParameterID {"slot2", 1}, "Slot 2", processorChoices, 0)),
                 mainProcessor (new juce::AudioProcessorGraph())
 {
-    addParameter(processorSlot1);
-    addParameter(processorSlot2);
+//    addParameter(processorSlot1);
+//    addParameter(processorSlot2);
 }
 
 
@@ -158,43 +161,57 @@ void MultiFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
 // UPDATE GRPAH FOR BUTTONS
 
-void MultiFXAudioProcessor::updateGraph(int slotIndex)
+MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotIndex, const juce::String& effect)
 {
+    if(globalIndex == 2)
+        return nullptr;
+    
+    globalIndex = slotIndex;
+    
     bool hasChanged = false;
+    Node::Ptr newNode = nullptr;
     
     juce::ReferenceCountedArray<Node> slots;
     slots.add(slot1Node);
     slots.add(slot2Node);
     
-    if(slotIndex == 0)
+//    if(false)
+//    {
+//        //
+//        auto slot = slots.getUnchecked(0);
+//        if(slot != nullptr)
+//        {
+//            mainProcessor->removeNode(slot.get());
+//            slots.set(0, nullptr);
+//            hasChanged = true;
+//        } // End if
+//    } // End if
+    if(effect == "CHORUS")
     {
-        auto slot = slots.getUnchecked(0);
-        if(slot != nullptr)
-        {
-            mainProcessor->removeNode(slot.get());
-            slots.set(0, nullptr);
-            hasChanged = true;
-        } // End if
-    } // End if
-    else if(slotIndex == 1)
-    {
-        auto slot = slots.getUnchecked(1);
+        auto slot = slots.getUnchecked(slotIndex);
         
         if(slot != nullptr)
         {
             if(slot->getProcessor()->getName() == "Chorus")
             {
-                return;
+                return nullptr;
             } // End if
             
             mainProcessor->removeNode(slot.get());
         } // End if
         
-        slots.set(1, MultiFXAudioProcessor::getChorus());
-        slot = slots.getUnchecked(1);
+        newNode = MultiFXAudioProcessor::getChorus();
+        
+        slots.set(slotIndex, newNode);
+        
+        slot = slots.getUnchecked(slotIndex);
+        
+        MultiFXAudioProcessor::nodeID_Array[slotIndex] = newNode;
+        
         DBG("Processor: " << slot->getProcessor()->getName());
-        hasChanged = true;
         DBG("Chorus Created");
+        
+        hasChanged = true;
     } // End else if
     
     
@@ -248,6 +265,14 @@ void MultiFXAudioProcessor::updateGraph(int slotIndex)
         DBG("ACTIVE SLOTS CONNECTION COMPLETED");
     } // End if
     
+    // Iterate and print NodeID_Array
+    for(int i = 0; i < nodeID_Array.size(); i++)
+    {
+        if(nodeID_Array[i] != nullptr)
+            DBG("Effect in index: " << i);
+    }
+    
+     return newNode;
 }
 
 //void MultiFXAudioProcessor::updateGraph() {

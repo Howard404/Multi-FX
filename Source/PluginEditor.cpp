@@ -90,8 +90,17 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     if(button == &chorus)
     {
         DBG("Chorus Selected\n");
-        audioProcessor.updateGraph(1);
+        
+        // Replace 0 with your own global index for updateGraph
+        // PluginProcessor.h has the statement: using Node = juce::AudioProcessorGraph::Node;
+        // See PluginProcessor.h for Node::Ptr array declaration (std::array<Node::Ptr, 2> NameOfArray)
+        // Function returns Node::Ptr object or nullptr
+        // If functions returns a nullptr, do nothing
+        // Let me know if you have any problems
+        audioProcessor.updateGraph(0, "CHORUS");
+        
         chorus.setButtonText("NEW CHORUS!");
+        
         // Get chorusProcessor
         // Get chorus NodeID
         // Pass processor to subcompnent and get its reference

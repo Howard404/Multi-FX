@@ -57,14 +57,14 @@ public:
     
     // Returns the ChorusProcessor NodeID
     Node::Ptr getChorus();
-    void updateGraph(int slotIndex);
+    Node::Ptr updateGraph(int slotIndex, const juce::String& effect);
     
 private:
     void initialiseGraph();
     void connectAudioNodes();
 //    void updateGraph(int slotIndex);
     
-    juce::StringArray processorChoices {"Empty", "Chorus", "Reverb"};
+//    juce::StringArray processorChoices {"Empty", "Chorus", "Reverb"};
     
     juce::AudioParameterChoice* processorSlot1;
     juce::AudioParameterChoice* processorSlot2;
@@ -80,6 +80,10 @@ private:
     
     Node::Ptr slot1Node;
     Node::Ptr slot2Node;
+    
+    std::array<Node::Ptr, 2> nodeID_Array;
+    
+//    juce::ReferenceCountedArray<Node> nodeList = new juce::ReferenceCountedArray<Node>();
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MultiFXAudioProcessor)
 };
