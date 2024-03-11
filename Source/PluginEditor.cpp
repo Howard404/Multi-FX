@@ -50,8 +50,14 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     reverb.addListener(this);
     chorus.setButtonText("Chorus");
     chorus.addListener(this);
-    muteReverb.setButtonText("muted");
-    muteChorus.setButtonText("muted");
+    muteReverb.setButtonText("Mute");
+    muteReverb.setToggleable(true);
+    muteReverb.setToggleState(true, false);
+    muteReverb.addListener(this);
+    muteChorus.setButtonText("Mute");
+    muteChorus.setToggleable(true);
+    muteChorus.setToggleState(true, false);
+    muteChorus.addListener(this);
     //muteChorus.setImages(false,true,true,unmuted,1.0,juce::Colours::white,unmuted,1.0, juce::Colours::white,muted,1.0, juce::Colours::white,0);
     //muteReverb.setImages(false, true, true, unmuted, 1.0, juce::Colours::white, unmuted, 1.0, juce::Colours::white, muted, 1.0, juce::Colours::white, 0);
     addAndMakeVisible(reverb);
@@ -93,6 +99,36 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     {
         DBG("Reverb Selected\n");
     }
+  else if (button == &muteChorus)
+  {
+    if (muteChorus.getToggleState())
+    {
+        muteChorus.setButtonText("Unmute");
+        muteChorus.setColour(juce::TextButton::buttonColourId,juce::Colours::red);
+        muteChorus.setToggleState(false,false);
+    }
+    else
+    {
+        muteChorus.setButtonText("Mute");
+        muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+        muteChorus.setToggleState(true, false);
+    }
+  }
+  else if (button == &muteReverb)
+  {
+    if (muteReverb.getToggleState())
+    {
+        muteReverb.setButtonText("Unmute");
+        muteReverb.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+        muteReverb.setToggleState(false, false);
+    }
+    else
+    {
+        muteReverb.setButtonText("Mute");
+        muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+        muteReverb.setToggleState(true, false);
+    }
+  }
 }
 
 
@@ -100,6 +136,8 @@ MultiFXAudioProcessorEditor::~MultiFXAudioProcessorEditor()
 {
     reverb.removeListener(this);
     chorus.removeListener(this);
+    muteReverb.removeListener(this);
+    muteChorus.removeListener(this);
 }
 
 //==============================================================================
