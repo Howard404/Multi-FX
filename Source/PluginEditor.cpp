@@ -14,7 +14,7 @@
 //==============================================================================
 ActiveComponent::ActiveComponent()
 {
-    addAndMakeVisible(mainEditor);
+    
 }
 ActiveComponent::~ActiveComponent()
 {
@@ -27,7 +27,11 @@ void ActiveComponent::paint(juce::Graphics&)
 }
 void ActiveComponent::resized()
 {
+  if (mainEditor != nullptr)
+  {
+    addAndMakeVisible(mainEditor);
     mainEditor->setBounds(getLocalBounds());
+  }
 }
 MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
@@ -101,7 +105,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
         
         chorus.setButtonText("NEW CHORUS!");
       
-        audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.mainProcessor->getNode(0)->getProcessor());
+        audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.nodeID_Array[0]->getProcessor());
 
         // Get chorusProcessor
         // Get chorus NodeID
