@@ -100,7 +100,9 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
         audioProcessor.updateGraph(0, "CHORUS");
         
         chorus.setButtonText("NEW CHORUS!");
-        
+      
+        audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.mainProcessor->getNode(0)->getProcessor());
+
         // Get chorusProcessor
         // Get chorus NodeID
         // Pass processor to subcompnent and get its reference
