@@ -62,6 +62,8 @@ public:
     std::unique_ptr<juce::AudioProcessorGraph> mainProcessor;
     Node::Ptr slot1Node;
     Node::Ptr slot2Node;
+
+    std::array<Node::Ptr, 2> nodeID_Array;
     
 private:
     void initialiseGraph();
@@ -81,11 +83,6 @@ private:
     Node::Ptr audioOutputNode;
     Node::Ptr midiInputNode;
     Node::Ptr midiOutputNode;
-    
-    Node::Ptr slot1Node;
-    Node::Ptr slot2Node;
-    
-    std::array<Node::Ptr, 2> nodeID_Array;
     
 //    juce::ReferenceCountedArray<Node> nodeList = new juce::ReferenceCountedArray<Node>();
     //==============================================================================
