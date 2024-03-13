@@ -58,6 +58,10 @@ public:
     // Returns the ChorusProcessor NodeID
     Node::Ptr getChorus();
     Node::Ptr updateGraph(int slotIndex, const juce::String& effect);
+
+    std::unique_ptr<juce::AudioProcessorGraph> mainProcessor;
+    Node::Ptr slot1Node;
+    Node::Ptr slot2Node;
     
 private:
     void initialiseGraph();
@@ -69,7 +73,7 @@ private:
     juce::AudioParameterChoice* processorSlot1;
     juce::AudioParameterChoice* processorSlot2;
     
-    std::unique_ptr<juce::AudioProcessorGraph> mainProcessor;
+    
     
     Node::Ptr chorusNode;
     
