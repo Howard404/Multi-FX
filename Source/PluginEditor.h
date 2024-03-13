@@ -25,8 +25,8 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
-    ChorusProcessor chorus;
-    juce::AudioProcessorEditor* mainEditor = new juce::GenericAudioProcessorEditor(chorus);
+    
+    juce::AudioProcessorEditor* mainEditor = nullptr;
 
 };
 class MultiFXAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Button::Listener
