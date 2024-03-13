@@ -20,6 +20,7 @@ ChorusProcessor::ChorusProcessor() : AudioProcessor (BusesProperties().withInput
     apvts.addParameterListener ("CENTREDELAY", this);
     apvts.addParameterListener ("FEEDBACK", this);
     apvts.addParameterListener ("MIX", this);
+    apvts.addParameterListener("BYPASS", this);
 }
 
 ChorusProcessor::~ChorusProcessor()
@@ -43,7 +44,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ChorusProcessor::createParam
     params.add (std::make_unique<juce::AudioParameterInt>  (juce::ParameterID {"CENTREDELAY", 1}, "Centre Delay", 1, 50, 1));
     params.add (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"FEEDBACK", 1}, "Feedback", Range { -1.0f, 1.0f, 0.01f }, 0.0f));
     params.add (std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"MIX", 1}, "Mix", Range { 0.0f, 1.0f, 0.01f }, 0.0f));
-//    params.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"BYPASS", 1}, "Bypass", false));
+    params.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"BYPASS", 1}, "Bypass", false));
     
     return params;
 }
@@ -141,17 +142,25 @@ void ChorusProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 void ChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     // DSP LOGIC HERE
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    juce::dsp::AudioBlock<float> sampleBlock (buffer);
-    juce::dsp::ProcessContextReplacing<float> context (sampleBlock);
+    bool isBypassed = *apvts.getRawParameterValue("BYPASS") != 0.0f;
     
-    chorus.process (context);
+    if(!isBypassed)
+    {
+        juce::ScopedNoDenormals noDenormals;
+        auto totalNumInputChannels  = getTotalNumInputChannels();
+        auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+        for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+            buffer.clear (i, 0, buffer.getNumSamples());
+
+        juce::dsp::AudioBlock<float> sampleBlock (buffer);
+        juce::dsp::ProcessContextReplacing<float> context (sampleBlock);
+        
+        chorus.process (context);
+    } else
+    {
+        processBlockBypassed(buffer, midiMessages);
+    }
 }
 
 //juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

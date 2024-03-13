@@ -275,6 +275,73 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
      return newNode;
 }
 
+void MultiFXAudioProcessor::removeNode(int index)
+{
+    if(nodeID_Array.size() <= index)
+    {
+        DBG("PARAM index OUT OF BOUNDS");
+        return;
+    }
+    
+    juce::ReferenceCountedArray<Node> slots;
+    slots.add(slot1Node);
+    slots.add(slot2Node);
+    
+    auto slot = slots.getUnchecked(index);
+    if(slot.get() != nullptr)
+    {
+        mainProcessor->removeNode(slot.get());
+        nodeID_Array[index] = nullptr;
+    } else
+    {
+        DBG("SLOT REFERENCE NOT FOUND");
+        return;
+    }
+    
+    // CONNECT NODES
+    
+    for (auto connection : mainProcessor->getConnections())
+        mainProcessor->removeConnection (connection);
+
+    juce::ReferenceCountedArray<Node> activeSlots;
+
+    for (auto slot : slots)
+    {
+        if (slot != nullptr)
+        {
+            activeSlots.add (slot);
+
+            slot->getProcessor()->setPlayConfigDetails (getMainBusNumInputChannels(),
+                                                        getMainBusNumOutputChannels(),
+                                                        getSampleRate(), getBlockSize());
+        } // End if
+    } // End for loop
+
+    if (activeSlots.isEmpty())
+    {
+        DBG("NO ACTIVE SLOTS");
+        connectAudioNodes();
+    } // End if
+    else
+    {
+        DBG("ACTIVE SLOTS CONNECTING");
+        for (int i = 0; i < activeSlots.size() - 1; ++i)
+        {
+            for (int channel = 0; channel < 2; ++channel)
+                mainProcessor->addConnection ({ { activeSlots.getUnchecked (i)->nodeID,      channel },
+                    { activeSlots.getUnchecked (i + 1)->nodeID,  channel } });
+        } // End for loop
+        
+        for (int channel = 0; channel < 2; ++channel)
+        {
+            mainProcessor->addConnection ({ { audioInputNode->nodeID,         channel },
+                { activeSlots.getFirst()->nodeID, channel } });
+            mainProcessor->addConnection ({ { activeSlots.getLast()->nodeID,  channel },
+                { audioOutputNode->nodeID,        channel } });
+        }
+    }// End for loop
+}
+
 //void MultiFXAudioProcessor::updateGraph() {
 //    bool hasChanged = false;
 //    

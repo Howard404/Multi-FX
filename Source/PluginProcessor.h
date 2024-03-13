@@ -65,6 +65,8 @@ public:
 
     std::array<Node::Ptr, 2> nodeID_Array;
     
+    void removeNode(int index);
+    
 private:
     void initialiseGraph();
     void connectAudioNodes();
