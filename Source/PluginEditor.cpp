@@ -139,7 +139,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
   }
   else if (button == &muteReverb)
   {
-    if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[0]->getProcessor())
+    if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[1]->getProcessor())
     {
         audioWindow.removeChildComponent(audioWindow.mainEditor);
         audioWindow.resized();
