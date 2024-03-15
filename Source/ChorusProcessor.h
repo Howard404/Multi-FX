@@ -59,8 +59,6 @@ private:
     
     int bpm { 0 };
     void parameterChanged (const juce::String& parameterID, float newValue) override;
-    // ProcessChain contains both Chorus and Gain
-//    juce::dsp::ProcessorChain<juce::dsp::Chorus<float>, juce::dsp::Gain<float>> processorChain;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusProcessor)

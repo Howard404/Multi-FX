@@ -9,7 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "ChorusProcessor.h"
-#include "ReverbProcessor.h"
+#include "CompressorProcessor.h"
 
 // Global Index for nodeID array
 int globalIndex = 0;
@@ -37,6 +37,12 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::getChorus()
 {
     MultiFXAudioProcessor::Node::Ptr chorusNode = mainProcessor->addNode (std::make_unique<ChorusProcessor>());
     return chorusNode;
+}
+
+MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::getCompressor()
+{
+    MultiFXAudioProcessor::Node::Ptr compressorNode = mainProcessor->addNode (std::make_unique<CompressorProcessor>());
+    return compressorNode;
 }
 
 const juce::String MultiFXAudioProcessor::getName() const
@@ -163,10 +169,10 @@ void MultiFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
 MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotIndex, const juce::String& effect)
 {
-    if(globalIndex == 2)
-        return nullptr;
-    
-    globalIndex = slotIndex;
+//    if(globalIndex == 2)
+//        return nullptr;
+//    
+//    globalIndex = slotIndex;
     
     bool hasChanged = false;
     Node::Ptr newNode = nullptr;
@@ -212,7 +218,31 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
         DBG("Chorus Created");
         
         hasChanged = true;
-    } // End else if
+    } else if(effect == "COMPRESSOR")
+    {
+        auto slot = slots.getUnchecked(slotIndex);
+        
+        if(slot != nullptr)
+        {
+            if(slot->getProcessor()->getName() == "Compressor")
+            {
+                return nullptr;
+            } // End if
+            
+            mainProcessor->removeNode(slot.get());
+        } // End if
+        
+        newNode = MultiFXAudioProcessor::getCompressor();
+        
+        slots.set(slotIndex, newNode);
+        
+        slot = slots.getUnchecked(slotIndex);
+        
+        MultiFXAudioProcessor::nodeID_Array[slotIndex] = newNode;
+        
+        DBG("Processor: " << slot->getProcessor()->getName());
+        DBG("Chorus Created");
+    }
     
     
     // CONNECT NODES TO GRAPH
@@ -277,9 +307,9 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
 
 void MultiFXAudioProcessor::removeNode(int index)
 {
-    if(nodeID_Array.size() <= index)
+    if(nodeID_Array.size() <= index || nodeID_Array[index] == nullptr)
     {
-        DBG("PARAM index OUT OF BOUNDS");
+        DBG("PARAM index OUT OF BOUNDS OR NULL");
         return;
     }
     

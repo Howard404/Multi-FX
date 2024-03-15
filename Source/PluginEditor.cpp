@@ -106,6 +106,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
         muteChorus.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
         audioWindow.resized();;
 
+        audioWindow.resized();
         // Get chorusProcessor
         // Get chorus NodeID
         // Pass processor to subcompnent and get its reference

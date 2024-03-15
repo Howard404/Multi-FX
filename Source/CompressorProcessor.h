@@ -13,15 +13,18 @@
 #include <JuceHeader.h>
 //#include "Base.h"
 
-class ReverbProcessor : public juce::AudioProcessor {
+class CompressorProcessor : public juce::AudioProcessor,
+                            public juce::AudioProcessorValueTreeState::Listener {
 public:
     //==============================================================================
-    ReverbProcessor();
+    CompressorProcessor();
+    ~CompressorProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     void processBlock (juce::AudioSampleBuffer&, juce::MidiBuffer&) override;
+    void reset() override;
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -43,8 +46,18 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    juce::AudioProcessorValueTreeState apvts;
 private:
+    
+    juce::dsp::Compressor<float> compressor;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    
+    juce::AudioPlayHead::CurrentPositionInfo positionInfo;
+    
+//    int bpm { 0 };
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
+    
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorProcessor)
 };

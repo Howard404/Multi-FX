@@ -57,6 +57,7 @@ public:
     
     // Returns the ChorusProcessor NodeID
     Node::Ptr getChorus();
+    Node::Ptr getCompressor();
     Node::Ptr updateGraph(int slotIndex, const juce::String& effect);
 
     std::unique_ptr<juce::AudioProcessorGraph> mainProcessor;

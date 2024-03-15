@@ -7,10 +7,10 @@
       <FILE id="JenkAo" name="ChorusEditor.cpp" compile="1" resource="0"
             file="Source/ChorusEditor.cpp"/>
       <FILE id="GcT9Dl" name="ChorusEditor.h" compile="0" resource="0" file="Source/ChorusEditor.h"/>
-      <FILE id="HcLeK8" name="ReverbProcessor.cpp" compile="1" resource="0"
-            file="Source/ReverbProcessor.cpp"/>
-      <FILE id="OeWPA7" name="ReverbProcessor.h" compile="0" resource="0"
-            file="Source/ReverbProcessor.h"/>
+      <FILE id="HcLeK8" name="CompressorProcessor.cpp" compile="1" resource="0"
+            file="Source/CompressorProcessor.cpp"/>
+      <FILE id="OeWPA7" name="CompressorProcessor.h" compile="0" resource="0"
+            file="Source/CompressorProcessor.h"/>
       <FILE id="avxYvC" name="ChorusProcessor.cpp" compile="1" resource="0"
             file="Source/ChorusProcessor.cpp"/>
       <FILE id="TFd5DF" name="ChorusProcessor.h" compile="0" resource="0"
