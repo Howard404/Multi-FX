@@ -54,13 +54,9 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     reverb.addListener(this);
     chorus.setButtonText("Chorus");
     chorus.addListener(this);
-    muteReverb.setButtonText("Mute");
-    muteReverb.setToggleable(true);
-    muteReverb.setToggleState(true, false);
+    muteReverb.setButtonText("Remove");
     muteReverb.addListener(this);
-    muteChorus.setButtonText("Mute");
-    muteChorus.setToggleable(true);
-    muteChorus.setToggleState(true, false);
+    muteChorus.setButtonText("Remove");
     muteChorus.addListener(this);
     //muteChorus.setImages(false,true,true,unmuted,1.0,juce::Colours::white,unmuted,1.0, juce::Colours::white,muted,1.0, juce::Colours::white,0);
     //muteReverb.setImages(false, true, true, unmuted, 1.0, juce::Colours::white, unmuted, 1.0, juce::Colours::white, muted, 1.0, juce::Colours::white, 0);
@@ -102,10 +98,13 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
         // If functions returns a nullptr, do nothing
         // Let me know if you have any problems
         audioProcessor.updateGraph(0, "CHORUS");
-        
-        chorus.setButtonText("NEW CHORUS!");
-      
+
         audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.nodeID_Array[0]->getProcessor());
+        chorus.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
+        reverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+
+        muteChorus.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+        audioWindow.resized();;
 
         // Get chorusProcessor
         // Get chorus NodeID
@@ -113,35 +112,45 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     } else if(button == &reverb)
     {
         DBG("Reverb Selected\n");
+        reverb.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
+        chorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+
+        audioProcessor.updateGraph(1, "COMPRESSOR");
+
+        audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.nodeID_Array[1]->getProcessor());
+        audioWindow.resized();
+
     }
   else if (button == &muteChorus)
   {
-    if (muteChorus.getToggleState())
+    if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[0]->getProcessor())
     {
-        muteChorus.setButtonText("Unmute");
-        muteChorus.setColour(juce::TextButton::buttonColourId,juce::Colours::red);
-        muteChorus.setToggleState(false,false);
+      audioWindow.removeChildComponent(audioWindow.mainEditor);
+      audioWindow.resized();
+      audioProcessor.removeNode(0);
+      muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+      chorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
     }
     else
     {
-        muteChorus.setButtonText("Mute");
+        audioProcessor.removeNode(0);
         muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-        muteChorus.setToggleState(true, false);
     }
   }
   else if (button == &muteReverb)
   {
-    if (muteReverb.getToggleState())
+    if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[0]->getProcessor())
     {
-        muteReverb.setButtonText("Unmute");
-        muteReverb.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
-        muteReverb.setToggleState(false, false);
+        audioWindow.removeChildComponent(audioWindow.mainEditor);
+        audioWindow.resized();
+        audioProcessor.removeNode(1);
+        muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
+        reverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
     }
     else
     {
-        muteReverb.setButtonText("Mute");
+        audioProcessor.removeNode(1);
         muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-        muteReverb.setToggleState(true, false);
     }
   }
 }
