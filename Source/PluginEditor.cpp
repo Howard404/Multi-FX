@@ -50,7 +50,7 @@ MultiFXAudioProcessorEditor::MultiFXAudioProcessorEditor (MultiFXAudioProcessor&
     chorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
     muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
     muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-    reverb.setButtonText("Reverb");
+    reverb.setButtonText("Compressor");
     reverb.addListener(this);
     chorus.setButtonText("Chorus");
     chorus.addListener(this);
@@ -140,7 +140,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
   }
   else if (button == &muteReverb)
   {
-    if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[1]->getProcessor())
+    if (audioProcessor.nodeID_Array[1] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[1]->getProcessor())
     {
         audioWindow.removeChildComponent(audioWindow.mainEditor);
         audioWindow.resized();
