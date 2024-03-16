@@ -169,10 +169,6 @@ void MultiFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
 MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotIndex, const juce::String& effect)
 {
-//    if(globalIndex == 2)
-//        return nullptr;
-//    
-//    globalIndex = slotIndex;
     
     bool hasChanged = false;
     Node::Ptr newNode = nullptr;
@@ -181,30 +177,21 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
     slots.add(slot1Node);
     slots.add(slot2Node);
     
-//    if(false)
-//    {
-//        //
-//        auto slot = slots.getUnchecked(0);
-//        if(slot != nullptr)
-//        {
-//            mainProcessor->removeNode(slot.get());
-//            slots.set(0, nullptr);
-//            hasChanged = true;
-//        } // End if
-//    } // End if
+
     if(effect == "CHORUS")
     {
         auto slot = slots.getUnchecked(slotIndex);
         
         if(slot != nullptr)
         {
+            DBG("is not null");
             if(slot->getProcessor()->getName() == "Chorus")
             {
                 return nullptr;
-            } // End if
+            }
             
             mainProcessor->removeNode(slot.get());
-        } // End if
+        }
         
         newNode = MultiFXAudioProcessor::getChorus();
         
@@ -227,10 +214,10 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
             if(slot->getProcessor()->getName() == "Compressor")
             {
                 return nullptr;
-            } // End if
+            }
             
             mainProcessor->removeNode(slot.get());
-        } // End if
+        }
         
         newNode = MultiFXAudioProcessor::getCompressor();
         
@@ -286,20 +273,13 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
                                                 { activeSlots.getFirst()->nodeID, channel } });
                 mainProcessor->addConnection ({ { activeSlots.getLast()->nodeID,  channel },
                                                 { audioOutputNode->nodeID,        channel } });
-            } // End for loop
-        } // End else
+            }
+        }
 
         for (auto node : mainProcessor->getNodes())
             node->getProcessor()->enableAllBuses();
         
         DBG("ACTIVE SLOTS CONNECTION COMPLETED");
-    } // End if
-    
-    // Iterate and print NodeID_Array
-    for(int i = 0; i < nodeID_Array.size(); i++)
-    {
-        if(nodeID_Array[i] != nullptr)
-            DBG("Effect in index: " << i);
     }
     
      return newNode;
@@ -307,124 +287,25 @@ MultiFXAudioProcessor::Node::Ptr MultiFXAudioProcessor::updateGraph(int slotInde
 
 void MultiFXAudioProcessor::removeNode(int index)
 {
-    if(nodeID_Array.size() <= index || nodeID_Array[index] == nullptr)
-    {
-        DBG("PARAM index OUT OF BOUNDS OR NULL");
-        return;
-    }
-    
+        
+      
     juce::ReferenceCountedArray<Node> slots;
     slots.add(slot1Node);
     slots.add(slot2Node);
     
+    
     auto slot = slots.getUnchecked(index);
-    if(slot.get() != nullptr)
+    if(nodeID_Array[index] != nullptr)
     {
-        mainProcessor->removeNode(slot.get());
+        mainProcessor->removeNode(nodeID_Array[index].get());
+        slots.set(index, nullptr);
         nodeID_Array[index] = nullptr;
-    } else
-    {
-        DBG("SLOT REFERENCE NOT FOUND");
-        return;
     }
     
-    // CONNECT NODES
-    
-    for (auto connection : mainProcessor->getConnections())
-        mainProcessor->removeConnection (connection);
+    connectAudioNodes();
 
-    juce::ReferenceCountedArray<Node> activeSlots;
-
-    for (auto slot : slots)
-    {
-        if (slot != nullptr)
-        {
-            activeSlots.add (slot);
-
-            slot->getProcessor()->setPlayConfigDetails (getMainBusNumInputChannels(),
-                                                        getMainBusNumOutputChannels(),
-                                                        getSampleRate(), getBlockSize());
-        } // End if
-    } // End for loop
-
-    if (activeSlots.isEmpty())
-    {
-        DBG("NO ACTIVE SLOTS");
-        connectAudioNodes();
-    } // End if
-    else
-    {
-        DBG("ACTIVE SLOTS CONNECTING");
-        for (int i = 0; i < activeSlots.size() - 1; ++i)
-        {
-            for (int channel = 0; channel < 2; ++channel)
-                mainProcessor->addConnection ({ { activeSlots.getUnchecked (i)->nodeID,      channel },
-                    { activeSlots.getUnchecked (i + 1)->nodeID,  channel } });
-        } // End for loop
-        
-        for (int channel = 0; channel < 2; ++channel)
-        {
-            mainProcessor->addConnection ({ { audioInputNode->nodeID,         channel },
-                { activeSlots.getFirst()->nodeID, channel } });
-            mainProcessor->addConnection ({ { activeSlots.getLast()->nodeID,  channel },
-                { audioOutputNode->nodeID,        channel } });
-        }
-    }// End for loop
 }
 
-//void MultiFXAudioProcessor::updateGraph() {
-//    bool hasChanged = false;
-//    
-//    juce::Array<juce::AudioParameterChoice*> choices = {processorSlot1, processorSlot2};
-//    
-//    juce::ReferenceCountedArray<Node> slots;
-//    slots.add(slot1Node);
-//    slots.add(slot2Node);
-//    
-//    DBG("update graph is called");
-//    
-//    for (int i = 0; i < 2; ++i)
-//           {
-//               auto& choice = choices.getReference (i);
-//               auto  slot   = slots  .getUnchecked (i);
-//    
-//               if (choice->getIndex() == 0)
-//               {
-//                   if (slot != nullptr)
-//                   {
-//                       mainProcessor->removeNode (slot.get());
-//                       slots.set (i, nullptr);
-//                       hasChanged = true;
-//                   }
-//               }
-//               else if (choice->getIndex() == 1)
-//               {
-//                   if (slot != nullptr)
-//                   {
-//                       if (slot->getProcessor()->getName() == "Chorus")
-//                           continue;
-//    
-//                       mainProcessor->removeNode (slot.get());
-//                   }
-//                   DBG("CHORUS PROCESSOR");
-//                   slots.set (i, mainProcessor->addNode (std::make_unique<ChorusProcessor>()));
-//                   hasChanged = true;
-//               }
-//               else if (choice->getIndex() == 2)
-//               {
-//                   if (slot != nullptr)
-//                   {
-//                       if (slot->getProcessor()->getName() == "Reverb")
-//                           continue;
-//    
-//                       mainProcessor->removeNode (slot.get());
-//                   }
-//                   DBG("REVERB PROCESSOR");
-//                   slots.set (i, mainProcessor->addNode (std::make_unique<ReverbProcessor>()));
-//                   hasChanged = true;
-//               }
-//           }
-//}
 
 //==============================================================================
 bool MultiFXAudioProcessor::hasEditor() const
@@ -444,6 +325,28 @@ void MultiFXAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+//    juce::XmlElement graphState("GraphState");
+//        
+////        // Iterate through each node in the graph
+//        for (int i = 0; i < mainProcessor->getNumNodes(); ++i)
+//        {
+//            juce::AudioProcessorGraph::Node::Ptr node = mainProcessor->getNode(i);
+//            if (node != nullptr)
+//            {
+//                // Create an XmlElement for each node's state
+//                juce::XmlElement* nodeState = new juce::XmlElement("NodeState");
+//                
+//                // Serialize the state of the node's processor into the XmlElement
+//                node->getProcessor()->getStateInformation(nodeState->createNewChildElement("ProcessorState"));
+//                
+//                // Add the node's state to the graph state
+//                graphState.addChildElement(nodeState);
+//            }
+//        }
+////        
+////        // Convert the XmlElement to a MemoryBlock
+//        juce::MemoryOutputStream stream(destData, false);
+//        graphState.writeToStream(stream);
 }
 
 void MultiFXAudioProcessor::setStateInformation (const void* data, int sizeInBytes)

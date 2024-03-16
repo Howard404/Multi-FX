@@ -30,6 +30,7 @@ CompressorProcessor::~CompressorProcessor()
     apvts.removeParameterListener ("ATTACK", this);
     apvts.removeParameterListener ("RELEASE", this);
     apvts.removeParameterListener ("MIX", this);
+    apvts.removeParameterListener("BYPASS", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout CompressorProcessor::createParameters()
