@@ -115,7 +115,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
         DBG("Reverb Selected\n");
         reverb.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
         chorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
-
+        muteReverb.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
         audioProcessor.updateGraph(1, "COMPRESSOR");
 
         audioWindow.mainEditor = new juce::GenericAudioProcessorEditor(audioProcessor.nodeID_Array[1]->getProcessor());
@@ -127,6 +127,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     if (audioProcessor.nodeID_Array[0] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[0]->getProcessor())
     {
       audioWindow.removeChildComponent(audioWindow.mainEditor);
+      audioWindow.mainEditor = nullptr;
       audioWindow.resized();
       audioProcessor.removeNode(0);
       muteChorus.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
@@ -143,6 +144,7 @@ void MultiFXAudioProcessorEditor::buttonClicked(juce::Button* button) {
     if (audioProcessor.nodeID_Array[1] != nullptr && audioWindow.mainEditor->getAudioProcessor() == audioProcessor.nodeID_Array[1]->getProcessor())
     {
         audioWindow.removeChildComponent(audioWindow.mainEditor);
+        audioWindow.mainEditor = nullptr;
         audioWindow.resized();
         audioProcessor.removeNode(1);
         muteReverb.setColour(juce::TextButton::buttonColourId, getLookAndFeel().findColour(juce::TextButton::buttonColourId));
