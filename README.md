@@ -11,6 +11,6 @@ More details about the project coming soon...
 ## Installation
 
 ### Logic Pro X (macOS)
-- Click [here]("https://github.com/Howard404/Multi-FX/AU/Multi-FX-Project.pkg](https://github.com/Howard404/Multi-FX/blob/main/AU/Multi-FX-Project.pkg") for AU download
+- Click [HERE]('https://github.com/Howard404/Multi-FX/tree/main/AU/Multi-FX-Project.pkg') for AU download
 ### Waveform, Ableton, FL Studio (Windows/Linux)
 - Coming soon...
